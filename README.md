@@ -5,3 +5,5 @@ This is a small utility that copies matching tags from one git repository to ano
     git-copy-tags <source-repo> <dest-repo> [-f]
     
 By default, the script is in "dry run" mode, which means that it only prints out what it **would** do, without actually doing it. If you are happy with the result, add `-f`.
+
+After running the command with `-f`, make sure to run `git push --tags` in the destination repository!

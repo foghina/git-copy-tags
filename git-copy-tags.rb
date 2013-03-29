@@ -54,7 +54,7 @@ begin
     puts "Running dry, use -f to actually apply changes..."
   end
   source_tags.each do |tag, commit|
-    unless (dest_tags.has_key? tag) or !(system "git rev-list --max-count=1 #{commit} > /dev/null 2> /dev/null")
+    unless dest_tags.has_key? tag or not system "git rev-list --max-count=1 #{commit} > /dev/null 2> /dev/null"
       if force
         if system "git tag #{tag} #{commit}"
           puts "Tagged #{commit} with #{tag}"

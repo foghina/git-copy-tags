@@ -1,9 +1,7 @@
 #!/usr/bin/env ruby
 
-def usage
-  puts "Usage: git-copy-tags <source-repo> <dest-repo> [-f]"
-  exit 1 
-end
+require 'optparse'
+
 
 def get_tags
   tags = %x(git tag)
@@ -18,14 +16,44 @@ def get_tags
   tags_hsh
 end
 
+force = false
+
+# Create a command-line arguments parser:
+$argv_parser = OptionParser.new do |parser|
+  parser.banner = "Usage: [-f] [--] git-copy-tags <source-repo> <dest-repo>"
+
+  parser.on("-f", "--force", "Copy tags, instead of performing a dry run.") do
+    force = true
+  end
+
+  parser.on(
+    "--",
+    "Stop parsing options. All further arguments are considered repository directories.") do
+    parser.terminate
+  end
+
+  parser.on("-h", "--help", "Show command usage information.") do
+    puts parser
+    exit 0
+  end
+end
+
+def usage
+  puts $argv_parser
+  exit 0
+end
+
+# Parse ARGV, and remove recognized options from it:
+$argv_parser.parse!
+
 # sanity check
 if ARGV.length < 2
   usage
 end
 
-source = ARGV[0]
-dest = ARGV[1]
-force = ARGV[2] == "-f"
+# Convert `source` and `destination` to absolute paths:
+source = File.expand_path(ARGV[0])
+dest = File.expand_path(ARGV[1])
 
 # dumb test to see if the args are actually git repos
 unless File.directory? File.join(source, ".git")
